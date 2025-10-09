@@ -1,7 +1,17 @@
-import { supabase } from '@/lib/supabaseClient'; // Adjust the import path if needed
+import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
 // This is a React Server Component
 export default async function TodosPage() {
+  const supabase = createClient()
+
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (!session) {
+    redirect('/login')
+  }
+
   // Fetch data from the 'todos' table
   const { data: todos, error } = await supabase.from('todos').select('*');
 
